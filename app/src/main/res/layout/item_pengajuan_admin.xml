@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginBottom="12dp"
+    android:layout_marginTop="4dp"
+    app:cardBackgroundColor="#E3F2FD"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tv_item_layanan"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Layanan..."
+            android:textColor="#1565C0"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/tv_item_status"/>
+
+        <TextView
+            android:id="@+id/tv_item_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textColor="#FF9800"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#90CAF9"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/tv_item_layanan"/>
+
+        <TextView
+            android:id="@+id/tv_pemohon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pemohon: -"
+            android:textSize="14sp"
+            android:textColor="#424242"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/divider"/>
+
+        <TextView
+            android:id="@+id/tv_item_tiket"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="#TIKET"
+            android:textSize="12sp"
+            android:textColor="#757575"
+            app:layout_constraintTop_toBottomOf="@id/tv_pemohon"/>
+
+        <Button
+            android:id="@+id/btn_action"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Proses Ajuan"
+            android:textAllCaps="false"
+            android:backgroundTint="#1976D2"
+            app:cornerRadius="20dp"
+            app:layout_constraintTop_toBottomOf="@id/tv_item_tiket"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

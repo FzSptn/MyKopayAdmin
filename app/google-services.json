@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "56138289308",
+    "firebase_url": "https://mykopaykp-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "mykopaykp",
+    "storage_bucket": "mykopaykp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:56138289308:android:1e069d1bd07d735f0f9d59",
+        "android_client_info": {
+          "package_name": "com.example.mykopay"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZHTipc0BBHWyWAPy3o03h5oe6uxatruE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:56138289308:android:030497a5906362cf0f9d59",
+        "android_client_info": {
+          "package_name": "com.example.mykopayadmin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZHTipc0BBHWyWAPy3o03h5oe6uxatruE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
