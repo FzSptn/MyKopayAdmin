@@ -1,10 +1,10 @@
 package com.example.mykopayadmin
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
@@ -21,31 +21,30 @@ class AdminHomeActivity : AppCompatActivity() {
     private lateinit var rvAdmin: RecyclerView
     private lateinit var adapter: AdminAdapter
 
-    // listData = yang ditampilkan di layar
+    // Variabel Data
     private val listData = ArrayList<PengajuanModel>()
-    // listBackup = database lengkap (untuk filter)
     private val listBackup = ArrayList<PengajuanModel>()
+
+    private lateinit var databaseRef: DatabaseReference
+    private var databaseListener: ValueEventListener? = null
 
     private lateinit var tvEmpty: TextView
     private lateinit var swipeRefresh: SwipeRefreshLayout
-
-    // Tombol Filter
     private lateinit var btnBaru: MaterialButton
     private lateinit var btnProses: MaterialButton
     private lateinit var btnSelesai: MaterialButton
 
-    // Status yang sedang aktif (Default: Baru)
     private var currentStatusFilter = "Baru"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_admin_home)
 
+        databaseRef = FirebaseDatabase.getInstance().getReference("Pengajuan")
+
         initViews()
         setupRecyclerView()
-
-        // Ambil Semua Data
-        fetchData()
+        startRealtimeData()
     }
 
     private fun initViews() {
@@ -53,32 +52,18 @@ class AdminHomeActivity : AppCompatActivity() {
         tvEmpty = findViewById(R.id.tv_empty)
         swipeRefresh = findViewById(R.id.swipe_refresh_home)
 
-        btnBaru = findViewById(R.id.btn_nav_ajuan)    // Tombol "Baru"
-        btnProses = findViewById(R.id.btn_nav_proses)  // Tombol "Proses"
-        btnSelesai = findViewById(R.id.btn_nav_history)// Tombol "Selesai"
+        btnBaru = findViewById(R.id.btn_nav_ajuan)
+        btnProses = findViewById(R.id.btn_nav_proses)
+        btnSelesai = findViewById(R.id.btn_nav_history)
 
         findViewById<View>(R.id.btn_back).setOnClickListener { finish() }
 
-        // --- LOGIKA KLIK TOMBOL FILTER ---
-        btnBaru.setOnClickListener {
-            filterData("Baru")
-            updateButtonUI(btnBaru)
-        }
-
-        btnProses.setOnClickListener {
-            filterData("Proses") // Menangani "Proses" & "Dalam Proses"
-            updateButtonUI(btnProses)
-        }
-
-        btnSelesai.setOnClickListener {
-            filterData("Selesai") // Menangani "Selesai", "Diterima", "Ditolak"
-            updateButtonUI(btnSelesai)
-        }
+        btnBaru.setOnClickListener { filterData("Baru"); updateButtonUI(btnBaru) }
+        btnProses.setOnClickListener { filterData("Proses"); updateButtonUI(btnProses) }
+        btnSelesai.setOnClickListener { filterData("Selesai"); updateButtonUI(btnSelesai) }
 
         swipeRefresh.setColorSchemeResources(android.R.color.holo_blue_dark)
-        swipeRefresh.setOnRefreshListener {
-            fetchData()
-        }
+        swipeRefresh.setOnRefreshListener { startRealtimeData() }
     }
 
     private fun setupRecyclerView() {
@@ -87,30 +72,29 @@ class AdminHomeActivity : AppCompatActivity() {
         rvAdmin.adapter = adapter
     }
 
-    private fun fetchData() {
-        val ref = FirebaseDatabase.getInstance().getReference("Pengajuan")
+    private fun startRealtimeData() {
+        if (databaseListener != null) databaseRef.removeEventListener(databaseListener!!)
 
-        Handler(Looper.getMainLooper()).postDelayed({ stopLoading() }, 8000)
-
-        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+        databaseListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                listBackup.clear() // Bersihkan data cadangan
-
-                // Variabel Hitung Jumlah
-                var countBaru = 0
-                var countProses = 0
-                var countSelesai = 0
+                listBackup.clear()
+                var countBaru = 0; var countProses = 0; var countSelesai = 0
 
                 if (snapshot.exists()) {
+                    // LOOP 1: Ambil Nama Folder (Ini adalah USERNAME)
                     for (userFolder in snapshot.children) {
+                        val keyUsername = userFolder.key
+
+                        // LOOP 2: Ambil Data Tiket
                         for (tiketSnapshot in userFolder.children) {
                             try {
                                 val data = tiketSnapshot.getValue(PengajuanModel::class.java)
                                 if (data != null) {
-                                    // Masukkan semua ke list cadangan
+                                    // PENTING: Masukkan Username ke dalam Data Model
+                                    data.username_pemohon = keyUsername
+
                                     listBackup.add(data)
 
-                                    // Hitung Jumlah per Kategori
                                     when (data.status) {
                                         "Baru", "Menunggu" -> countBaru++
                                         "Proses", "Dalam Proses" -> countProses++
@@ -120,77 +104,55 @@ class AdminHomeActivity : AppCompatActivity() {
                             } catch (e: Exception) { e.printStackTrace() }
                         }
                     }
-                    // Sortir dari terbaru
                     listBackup.sortByDescending { it.no_tiket }
                 }
 
-                // --- UPDATE TEKS TOMBOL (ANGKA DI KIRI) ---
                 btnBaru.text = "$countBaru Baru"
                 btnProses.text = "$countProses Proses"
                 btnSelesai.text = "$countSelesai Selesai"
 
-                // Terapkan filter yang sedang aktif saat ini (agar tidak reset ke Baru terus)
                 filterData(currentStatusFilter)
-
-                // Update warna tombol awal
-                when(currentStatusFilter) {
-                    "Baru" -> updateButtonUI(btnBaru)
-                    "Proses" -> updateButtonUI(btnProses)
-                    "Selesai" -> updateButtonUI(btnSelesai)
-                }
-
-                stopLoading()
+                if (swipeRefresh.isRefreshing) swipeRefresh.isRefreshing = false
             }
 
             override fun onCancelled(error: DatabaseError) {
-                stopLoading()
-                Toast.makeText(applicationContext, "Gagal: ${error.message}", Toast.LENGTH_SHORT).show()
+                if (swipeRefresh.isRefreshing) swipeRefresh.isRefreshing = false
             }
-        })
+        }
+        databaseRef.addValueEventListener(databaseListener!!)
+
+        when(currentStatusFilter) {
+            "Baru" -> updateButtonUI(btnBaru)
+            "Proses" -> updateButtonUI(btnProses)
+            "Selesai" -> updateButtonUI(btnSelesai)
+        }
     }
 
-    // --- FUNGSI FILTER LIST ---
     private fun filterData(statusKey: String) {
         currentStatusFilter = statusKey
         listData.clear()
-
         for (item in listBackup) {
             val status = item.status ?: ""
-
-            // Logika pencocokan status yang fleksibel
             val isMatch = when (statusKey) {
                 "Baru" -> status == "Baru" || status == "Menunggu"
                 "Proses" -> status == "Proses" || status == "Dalam Proses"
                 "Selesai" -> status == "Selesai" || status == "Diterima" || status == "Ditolak"
-                else -> true // Tampilkan semua jika key tidak dikenal
+                else -> true
             }
-
-            if (isMatch) {
-                listData.add(item)
-            }
+            if (isMatch) listData.add(item)
         }
-
         adapter.notifyDataSetChanged()
 
-        // Cek Kosong
         if (listData.isEmpty()) {
             tvEmpty.text = "Tidak ada data '$statusKey'"
-            tvEmpty.visibility = View.VISIBLE
-            rvAdmin.visibility = View.GONE
+            tvEmpty.visibility = View.VISIBLE; rvAdmin.visibility = View.GONE
         } else {
-            tvEmpty.visibility = View.GONE
-            rvAdmin.visibility = View.VISIBLE
+            tvEmpty.visibility = View.GONE; rvAdmin.visibility = View.VISIBLE
         }
     }
 
-    // --- FUNGSI GANTI WARNA TOMBOL ---
     private fun updateButtonUI(activeButton: MaterialButton) {
-        // Reset semua tombol ke warna putih (Teks Hitam)
-        setButtonState(btnBaru, false)
-        setButtonState(btnProses, false)
-        setButtonState(btnSelesai, false)
-
-        // Set tombol aktif ke warna Biru (Teks Putih)
+        setButtonState(btnBaru, false); setButtonState(btnProses, false); setButtonState(btnSelesai, false)
         setButtonState(activeButton, true)
     }
 
@@ -204,9 +166,8 @@ class AdminHomeActivity : AppCompatActivity() {
         }
     }
 
-    private fun stopLoading() {
-        if (swipeRefresh.isRefreshing) {
-            swipeRefresh.isRefreshing = false
-        }
+    override fun onDestroy() {
+        super.onDestroy()
+        if (databaseListener != null) databaseRef.removeEventListener(databaseListener!!)
     }
 }

@@ -45,6 +45,7 @@ dependencies {
     // --- PENTING: LIBRARY SWIPE REFRESH ---
     // Wajib ada agar fitur buffering/tarik-layar berfungsi
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    implementation("com.google.android.material:material:1.9.0")
 
     // --- Firebase ---
     implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
@@ -52,4 +53,5 @@ dependencies {
     implementation("com.google.firebase:firebase-database")
     implementation("com.google.firebase:firebase-storage")
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.itextpdf:itextg:5.5.10")
 }

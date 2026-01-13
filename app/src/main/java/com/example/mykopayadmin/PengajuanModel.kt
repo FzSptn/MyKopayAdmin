@@ -3,14 +3,13 @@ package com.example.mykopayadmin
 import com.google.firebase.database.Exclude
 
 data class PengajuanModel(
-    val no_tiket: String? = null,
-    val nama: String? = null,
-    val nik: String? = null,
-    val layanan: String? = null,
-    val keperluan: String? = null,
-    val status: String? = null,
-    val waktu: String? = null,
-    val catatan: String? = null,
+    var no_tiket: String? = "",
+    var nama: String? = "",
+    var nik: String? = "",
+    var layanan: String? = "",
+    var keperluan: String? = "",
+    var waktu: String? = "",
+    var status: String? = "",
 
     // Field for PDF link (Specific to Admin/User flow)
     val file_hasil_url: String? = null,
