@@ -8,10 +8,7 @@ Aplikasi Panel Admin khusus untuk pengurus Desa Koto Panjang (Kopay). Aplikasi i
 
 | Admin Login | Dashboard Proses | Detail & Verifikasi |
 |:---:|:---:|:---:|
-| <img width="626" height="1309" alt="image" src="https://github.com/user-attachments/assets/6d411c40-47b4-4bd1-9d93-d5490e85c461" />
- | <img width="619" height="1314" alt="image" src="https://github.com/user-attachments/assets/70d5b71f-36d8-413e-880b-3f40033dbdac" />
- | <img width="618" height="1314" alt="image" src="https://github.com/user-attachments/assets/11061bf1-494d-4dba-b00f-1dda8b42f092" />
-  |
+| <img src="https://github.com/user-attachments/assets/6d411c40-47b4-4bd1-9d93-d5490e85c461" width="200" /> | <img src="https://github.com/user-attachments/assets/70d5b71f-36d8-413e-880b-3f40033dbdac" width="200" /> | <img src="https://github.com/user-attachments/assets/11061bf1-494d-4dba-b00f-1dda8b42f092" width="200" /> |
 
 ## ✨ Fitur Utama Admin
 
