@@ -1,57 +1,73 @@
-# MyKopay Admin - Dashboard Manajemen Layanan
+# MyKopay Admin 🛠️
 
-MyKopay Admin adalah aplikasi khusus untuk administrator guna mengelola pengajuan layanan yang masuk dari aplikasi MyKopay User. Aplikasi ini memungkinkan admin untuk memantau, memverifikasi, dan mengubah status pengajuan secara real-time.
+Aplikasi Panel Admin khusus untuk pengurus Desa Koto Panjang (Kopay). Aplikasi ini berfungsi sebagai pusat kendali untuk memproses, memvalidasi, dan mengelola seluruh permohonan surat administrasi yang diajukan oleh warga melalui aplikasi MyKopay User.
 
-## 🛡️ Fitur Utama Admin
+> **Catatan:** Repository ini adalah bagian *backend/management* untuk Admin. Untuk sisi warga, silakan cek repository [MyKopay User].
 
-* **Dashboard Monitoring:** Tampilan ringkas jumlah pengajuan berdasarkan status:
-    * 🆕 **Baru:** Pengajuan yang baru masuk dan belum diproses.
-    * 🔄 **Proses:** Pengajuan yang sedang ditindaklanjuti.
-    * ✅ **Selesai:** Pengajuan yang telah tuntas.
-* **Filter Cepat:** Navigasi mudah antar kategori status tanpa perlu berpindah halaman.
-* **Manajemen Tiket:**
-    * Melihat detail lengkap pemohon (NIK, Nama, Jenis Layanan, Keperluan).
-    * Mengubah status pengajuan (Proses, Selesai, atau Tolak).
-* **Indikator Warna:** Status dibedakan dengan warna agar mudah dipindai (Orange, Biru, Hijau, Merah).
-* **Auto-Refresh:** Fitur *Swipe-to-Refresh* untuk memperbarui data terbaru dari server.
+## 📸 Screenshots
 
-## 🛠 Teknologi
+| Admin Login | Dashboard Proses | Detail & Verifikasi |
+|:---:|:---:|:---:|
+| <img width="626" height="1309" alt="image" src="https://github.com/user-attachments/assets/6d411c40-47b4-4bd1-9d93-d5490e85c461" />
+/> | <img width="619" height="1314" alt="image" src="https://github.com/user-attachments/assets/70d5b71f-36d8-413e-880b-3f40033dbdac" />
+/> | <img width="618" height="1314" alt="image" src="https://github.com/user-attachments/assets/11061bf1-494d-4dba-b00f-1dda8b42f092" />
+ /> |
 
-* **Bahasa:** Kotlin
-* **Database:** Firebase Realtime Database
-* **Arsitektur:** MVVM (Model-View-ViewModel) concept in Activity
-* **Komponen UI:**
-    * SwipeRefreshLayout (Buffering)
-    * RecyclerView & CardView
-    * Material Design Buttons
+## ✨ Fitur Utama Admin
 
-## 🚀 Cara Instalasi
+* **Login Admin & Keamanan**: Masuk menggunakan kredensial admin disertai verifikasi CAPTCHA matematika untuk mencegah akses bot.
+* **Manajemen Pengajuan**: Melihat daftar permohonan warga secara *real-time* termasuk nama pemohon, NIK, jenis layanan, dan detail keperluan.
+* **Verifikasi & Aksi**: Memberikan keputusan terhadap pengajuan (ACC/Terima atau Tolak) disertai dengan catatan admin.
+* **Draf Surat**: Fitur *Preview Surat (Draft)* untuk melihat tampilan dokumen sebelum diselesaikan atau dicetak.
 
-1.  **Clone Repository:**
+## 📱 Spesifikasi Sistem (Admin App)
+
+Aplikasi admin dirancang untuk berjalan pada perangkat operasional kantor desa dengan spesifikasi:
+
+### Perangkat Keras (Hardware)
+* **Sistem Operasi**: Android 7.0 (Nougat) atau lebih baru.
+* **RAM**: Minimal 3GB (Disarankan 4GB untuk kelancaran multitasking).
+* **Koneksi**: Koneksi internet stabil wajib tersedia untuk sinkronisasi Firebase.
+
+## 🛠️ Teknologi & Integrasi
+
+* **Bahasa**: Kotlin (Android Native).
+* **Database**: Firebase Realtime Database (Terhubung ke URL: `https://mykopaykp-default-rtdb.asia-southeast1.firebasedatabase.app/`).
+* **Version Control**: Git dengan branch `main` sebagai default branch.
+
+## 💻 Panduan Pengembangan (Developer)
+
+1.  **Clone Repository**
     ```bash
-    git clone [https://github.com/username-anda/MyKopay-Admin.git](https://github.com/username-anda/MyKopay-Admin.git)
+    git clone [https://github.com/username-anda/mykopay-admin.git](https://github.com/username-anda/mykopay-admin.git)
     ```
-2.  **Konfigurasi Firebase:**
-    * Gunakan project Firebase yang **SAMA** dengan aplikasi User.
-    * Unduh `google-services.json` dari console Firebase.
-    * Masukkan file tersebut ke folder `app/`.
-3.  **Jalankan:**
-    * Sync Project dengan Gradle Files.
-    * Run di Emulator atau Device Fisik.
 
-## 📂 Alur Kerja Data
+2.  **Konfigurasi SDK**
+    * Pastikan Android Studio Anda versi terbaru.
+    * Masukkan file `google-services.json` yang sesuai ke folder `app/`.
 
-Aplikasi Admin membaca data dari *root* yang sama dengan User App, namun memiliki akses *Read/Write* ke semua folder user.
+3.  **Sinkronisasi Git**
+    Jika terjadi kendala saat *push*, pastikan untuk melakukan merge terlebih dahulu agar data lokal dan remote sinkron:
+    ```bash
+    git pull origin main
+    git push origin main
+    ```
 
-**Logika Perubahan Status:**
-1.  Admin menerima data dengan status **"Baru"**.
-2.  Admin menekan tombol "Proses" -> Status di Firebase berubah jadi **"Proses"**.
-3.  Setelah selesai, Admin menekan "Selesai" -> Status berubah jadi **"Selesai"**.
-4.  Perubahan ini langsung muncul di notifikasi/riwayat User App.
+## 📂 Struktur Data Firebase
 
-## 📸 Screenshot
+Admin memiliki otoritas untuk mengubah field `status` dan menambahkan `catatan_admin` pada struktur berikut:
 
-*(Tambahkan screenshot Dashboard Admin dan Halaman Proses di sini)*
-
----
-**Admin Dashboard untuk Kerja Praktek**
+```json
+{
+  "Pengajuan": {
+    "UserID": {
+      "TiketID": {
+        "nama": "Bro",
+        "nik": "-",
+        "layanan": "Surat Keterangan Kelahiran",
+        "status": "Proses Pengajuan",
+        "catatan_admin": "Catatan dari pengurus desa..."
+      }
+    }
+  }
+}
